@@ -3,6 +3,13 @@
 # 参考
 - [蟻本をPythonで \(初級編\)](https://qiita.com/saba/items/affc94740aff117d2ca9)
 
+# Tips
+## 実行時間上限の目安
+- 1億を超えると厳しそう
+
+![](https://i.imgur.com/vZGreXd.jpg)
+
+
 # 1-6 気楽にウォーミングアップ
 ## 例題 1-6-1　三角形
 ### 本書
@@ -12,20 +19,18 @@ def solve():
     n = int(input())
     a = list(map(int, input().split()))
 
-    ans = 0
+    answer = 0
     for first_i in range(n):
         for second_i in range(first_i + 1, n):
             for third_i in range(second_i + 1, n):
-            print("(a,b,c)=" + "(" + str(first_i) + "," + str(second_i) + "," + str(third_i) + ")")
+                # print("(" + str(first_i) + "," + str(second_i) + "," + str(third_i) + ")") # for分型の全探索
                 perimeter = a[first_i] + a[second_i] + a[third_i]
-                max_side  = max(a[first_i], a[second_i], a[third_i])
-                rest      = perimeter - max_side;
+                long_side_length = max(a[first_i], a[second_i], a[third_i])
+                remaining_side_length = perimeter - long_side_length
 
-                if max_side < rest: # 三角形が作れる場合
-                    ans = max(ans, perimeter)
-
-    print(str(ans))
-# solve()
+                if long_side_length < remaining_side_length:  # 三角形が作れる場合
+                    answer = max(answer, perimeter)
+    print(str(answer))
 ```
 
 ### 【AtCoder 上の類題】
@@ -35,57 +40,86 @@ def solve():
 ``` Python
 def solve():
     N = int(input())
-    points = [list(map(int, (input().split()))) for _ in range(N)]
-    x_index = 0
-    y_index = 1
+    points = [list(map(int, input().split())) for _ in range(N)]
 
-    max_length = 0
+    length_max = 0
+    x_i = 0
+    y_i = 1
     for first_i in range(N):
         for second_i in range(first_i + 1, N):
-            x = abs(points[first_i][x_index] - points[second_i][x_index])
-            y = abs(points[first_i][y_index] - points[second_i][y_index])
-            max_length = max(max_length, (x*x+y*y)**0.5)
+            x = abs(points[first_i][x_i] - points[second_i][x_i])
+            y = abs(points[first_i][y_i] - points[second_i][y_i])
+            length_max = max(length_max, (x**2+y**2)**0.5)
 
-    print(max_length)  # 小数点以下1位
+    print(length_max)
+```
 
-# solve()
+```sh
+3
+1 1
+2 4
+4 3
+```
+
+```sh
+10
+1 8
+4 0
+3 7
+2 4
+5 9
+9 1
+6 2
+0 2
+8 6
+7 8
 ```
 
 #### ABC 051 B Sum of Three Integers　(よい練習問題です)
 
 ``` Python
 def solve():
-    K, S = list(map(int, input().split()))
-    count = 0
+    number_max, sum_of_numbers = list(map(int, input().split()))
+    number_of_allocation = 0
+    for x_i in range(number_max + 1):
+        for y_i in range(number_max + 1):
+            z_i = sum_of_numbers - x_i - y_i
+            if 0 <= z_i and z_i <= number_max:
+                number_of_allocation += 1
 
-    # XYZが全て異なる場合
-    for x_i in range(K+1):
-        for y_i in range(K+1):
-            z_i = S - x_i - y_i
-            if 0 <= z_i and z_i <= K:
-                count+=1
-
-    print(count)
-
-# solve()
+    print(str(number_of_allocation))
 ```
+```sh
+2 2
+```
+
 
 #### ABC 085 C Otoshidama　(よい練習問題です)
 
 ``` Python
 def solve():
-    N, Y = list(map(int, input().split()))
-
-    count = 0
-    for bill_10000_i in range(N+1):
-        for bill_5000_i in range(N+1):
-            bill_1000_i = N - bill_10000_i - bill_5000_i
-            if 0<=bill_1000_i<=2000 and 10000*bill_10000_i + 5000*bill_5000_i + 1000*bill_1000_i == Y:
-                print(bill_1000_i, bill_5000_i, bill_10000_i, sep=" ")
+    number_of_bills, sum_of_otoshidama = list(map(int, input().split()))
+    # number_of_bills, sum_of_otoshidama = [5, 10000] # for debug
+    for ten_thousand_i in range(number_of_bills + 1):
+        for five_thousand_i in range(number_of_bills - ten_thousand_i + 1):
+            # print(str(ten_thousand_i) + "," + str(five_thousand_i))
+            thousand_i = number_of_bills - ten_thousand_i - five_thousand_i
+            if 10000 * ten_thousand_i + 5000 * five_thousand_i + 1000 * thousand_i == sum_of_otoshidama:
+                print(ten_thousand_i, five_thousand_i, thousand_i, sep=" ")
                 return
-    print("-1 -1 -1")
+    print(-1, -1, -1, sep=" ")
+```
 
-# solve()
+``` Python
+9 45000
+```
+
+``` Python
+20 196000
+```
+
+``` Python
+2000 20000000
 ```
 
 ## 例題 1-6-2　Ants (POJ No.1852)
@@ -93,253 +127,36 @@ def solve():
 
 ``` Python
 def solve():
-    L = int(input())    # 竿の長さ
-    n = int(input())    # アリの個体数
-    x = list(map(int, input().split()))
+    length = int(input())
+    number_of_ants = int(input())
+    position_of_ants = list(map(int, input().split()))
+    time_minimun = 0
+    time_maximum = 0
+    for ants_i in range(number_of_ants):
+        time_minimum = min(time_maximum, position_of_ants[ants_i], abs(length - position_of_ants[ants_i]))
+        time_maximum = max(time_maximum, position_of_ants[ants_i], abs(length - position_of_ants[ants_i]))
 
-    min_time = 0
-    max_time = 0
-    for x_i in range(n):
-        min_time = max(min_time, min(x[x_i], L-x[x_i]))
-        max_time = max(max_time, max(x[x_i], L-x[x_i]))
-    print(str(min_time))
-    print(str(max_time))
+    print("minimum:" + str(time_minimum))
+    print("maximum:" + str(time_maximum))
+```
 
-# solve()
+``` Python
+10
+3
+2 6 7
 ```
 
 ### AGC 013 C Ants on a Circle
 // TODO
 
 # 2 基礎からスタート！ --- 初級編
-## 2-1 すべての基本 "全探索"
-### 例題 2-1-1　部分和問題
-#### 本書
-##### 再帰関数
+# 2-1 すべての基本 "全探索"
+## 例題 2-1-1　部分和問題
+### 本書
 
-- 階乗の計算
+## 例題 2-1-2　Lake Counting (POJ No.2386)
 
-``` Python
-def fact(n):
-    if n == 0:
-        return 1
-    return n * fact(n - 1)
-
-
-def solve():
-    print(str(fact(5)))
-```
-
-- フィナボッチ数列
-
-``` Python
-def fib(n):
-    if n <= 1:
-        return n
-    return fib(n - 1) + fib(n - 2)
-
-
-def solve():
-    print(str(fib(5)))
-```
-
-- メモ追加版
-
-``` Python
-MAX_N = 10010
-memo = [0 for _ in range(MAX_N)]
-
-def fib(n):
-    if n <= 1:
-        return n
-    if (memo[n] != 0):   # メモに過去の情報が残っている場合
-        return memo[n]
-    else:
-        memo[n] = fib(n - 1) + fib(n - 2)
-    return fib(n - 1) + fib(n - 2)
-
-
-def solve():
-    print(str(fib(5)))
-```
-
-- スタック
-    - スタック・キューは下記を参考にした
-    - [【Python学習】リストをスタック/キューとして使う](https://www.secat-blog.net/wordpress/learn-list_stack_queue-python_tutorial_ver3_chapter5/)
-
-``` Python
-def solve():
-    stack = [1, 2, 3, 4, 5]
-
-    # Push
-    stack.append(6)
-    stack.append(7)
-    print(stack)
-
-    # Pop
-    stack.pop()
-    stack.pop()
-    print(stack)
-```
-
-- キュー
-
-``` Python
-from collections import deque  # コンテナデータ型といってキューの実装に利用されるらしい。第8章で出てくるってよ
-def solve():
-    queue = deque([1, 2, 3, 4, 5])
-
-    # Push
-    queue.append(6)
-    queue.append(7)
-    print(queue)
-
-    # Pop
-    queue.popleft()
-    queue.popleft()
-    print(queue)
-```
-
-- 深さ優先探索：DFS
-
-``` Python
-# Global Variable
-n = 0
-a = []
-k = 0
-
-# DFS: deep first search 深さ優先探索
-# sumは現在作成している和
-# iまででsumを作り、残りi以降を調べる
-def dfs(i, sum):
-    # n個が決め終わったら、今までの和sumがkと等しいかを返す（終点）
-    if i == n:
-        return sum == k
-
-    # a[i]を使わない場合
-    if dfs(i + 1, sum):
-        return True
-
-    # a[i]を使う場合
-    if dfs(i + 1, sum + a[i]):
-        return True
-
-    # a[i]を使う使わないに関わらずkが作れないのでFalseを返す
-    return False
-
-def solve():
-    global n
-    global a
-    global k
-
-    n = int(input())
-    a = list(map(int, input().split()))
-    k = int(input())    # 目的の和
-
-    if dfs(0, 0):
-        print("Yes")
-    else:
-        print("No")
-```
-
-`input`
-
-```sh
-4
-1 2 4 7
-13
-```
-
-#### ABC 045 C - たくさんの数式　(同じく2n2n 通りを調べる全探索です)
-
-``` Python
-def solve():
-    sum = 0 # 求める合計値
-
-    n = input()
-    op_cnt = len(n) - 1 # 隙間の個数 op:operator
-    for i in range(2 ** op_cnt): # iは2進数で000, 001, 010, 011...,111と遷移する
-        op = [""] * op_cnt # あらかじめ["", "", ""]というリストを作っておく
-        for j in range(op_cnt):
-            if ((i >> j) & 1): # 5 = 0b101の場合["+", "", "+"]となる
-                op[op_cnt - 1 - j] = "+"
-
-        formula = "" # formula:式
-        # 演算子の数はn-1個なので個数を合わせる
-        # p_n: part_of_n?
-        for p_n, p_o in zip(n, op + [""]):
-            formula += (p_n + p_o)
-        sum += eval(formula)
-    print(sum)
-```
-
-- `bit全探索`は下記が詳しい。
-    - [Python de アルゴリズム（bit全探索）](https://qiita.com/gogotealove/items/11f9e83218926211083a)
-
-``` Python
-def solve():
-    money = 300
-    item = (("みかん", 100), ("りんご", 200), ("ぶどう", 300))
-    n = len(item)
-    for i in range(2 ** n):
-        bag = []
-        print("pattern {}: ".format(i), end="")
-
-        # iは2進数表記で000, 001, 010, 011,...,110, 111と増える
-        for j in range(n):  # このループが一番のポイント
-            if ((i >> j) & 1):  # 順に右にシフトさせ最下位bitのチェックを行う
-                bag.append(item[j][0])  # フラグが立っていたら bag に果物を詰める
-
-        print(bag)
-```
-
-- 文字列をPython式として実行する`eval`の詳細は以下を参照
-    - [\[python\] 文を実行するexec, eval](https://qiita.com/Kodaira_/items/30c84806b61792b613f2)
-
-``` Python
-def solve():
-    n = input()
-    op_cnt = len(n) - 1 # 隙間の個数 op:operator
-    for i in range(2 ** op_cnt): # iは2進数で000, 001, 010, 011...,111と遷移する
-        op = ["-"] * op_cnt # あらかじめ["-", "-", "-"]というリストを作っておく
-        for j in range(op_cnt):
-            if ((i >> j) & 1): # 5 = 0b101の場合["-", "+"< "-"]となる
-                op[op_cnt - 1 - j] = "+"
-
-        # 演算子の数はn-1個なので個数を合わせる。
-        # これにより最後は数字で終わることになる
-        # p_n: part_of_n?
-        formula = "" # formula:式
-        for p_n, p_o in zip(n, op + [""]):
-            formula += (p_n + p_o)
-        if eval(formula) == 7:
-            print(formula + "=7")
-            break
-```
-
-#### ABC 079 C - Train Ticket
-#### ABC 104 C - All Green
-TODO// watch video
-
-``` Python
-def solve():
-    # D:degree_of_difficulty / 難易度の数
-    # G:Goal / 目的の総合スコア
-    D,G  = list(map(int, input().split()))
-    P = [0] * D # 100*i点をつけられた問題がP[i]問存在する
-    C = [0] * D # P[i]をすべて解いた場合のコンプリートボーナス
-    for i in range(D):
-        p, c = list(map(int, input().split()))
-        P[i], C[i] = p, c
-```
-
-#### ARC 029 A - 高橋君とお肉
-
-#### ABC 002 D - 派閥　(全探索部分の考え方は共通です)
-
-### 例題 2-1-2　Lake Counting (POJ No.2386)
-
-#### 本書
+### 本書
 
 ``` Python
 N, M = 10, 12
@@ -439,11 +256,11 @@ def solve():
         print("No")
 ```
 
-### 例題 2-1-3　迷路の最短路
-#### 本書
+## 例題 2-1-3　迷路の最短路
+### 本書
 TODO:
 
-#### ABC 007 C 幅優先探索　(まんまです)
+### ABC 007 C 幅優先探索　(まんまです)
 
 ``` Python
 from collections import deque
