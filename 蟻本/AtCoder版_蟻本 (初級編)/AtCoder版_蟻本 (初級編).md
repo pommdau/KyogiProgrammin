@@ -10,43 +10,7 @@
 ![](https://i.imgur.com/vZGreXd.jpg)
 
 # 2 基礎からスタート！ --- 初級編
-## 例題 2-1-3　迷路の最短路
-### 本書
-TODO:
 
-### ABC 007 C 幅優先探索　(まんまです)
-
-``` Python
-from collections import deque
-
-# 幅優先探索
-def bfs(maze, visited, sy, sx, gy, gx):
-	# スタート地点の設定
-    queue = deque([[sy, sx]])
-    visited[sy][sx] = 0
-    
-    while queue:
-        y, x = queue.popleft() # キューでは右から左にオブジェクトを格納している
-        if [y, x] == [gy, gx]: # ゴールの場合
-            return visited[y][x]
-        for dy, dx in ([1, 0], [-1, 0], [0, 1], [0, -1]): # 順に上・下・右・左
-            new_y, new_x = y+dy, x+dx
-            if maze[new_y][new_x] == "." and \
-                    visited[new_y][new_x] == -1:    # 通行可能かつ未到達の場合
-                visited[new_y][new_x] = visited[y][x] + 1
-                queue.append([new_y, new_x])
-
-def solve():
-    R, C = list(map(int ,input().split()))   # Row, Column数
-    sy, sx = list(map(int, input().split())) # Start Point
-    gy, gx = list(map(int, input().split())) # Goal Point
-    sy, sx, gy, gx = sy-1, sx-1, gy-1, gx-1 # 与えられた座標を、プログラム側の実装に合わせる
-
-    maze = [input() for _ in range(R)]   # maze:迷路
-    visited = [[-1]*C for _ in range(R)] # スタート地点からそのマスにいくまでの最短距離
-
-    print(bfs(maze, visited, sy, sx, gy, gx))
-```
 
 ### 例題 2-1-4　特殊な状態の列挙
 #### 本書

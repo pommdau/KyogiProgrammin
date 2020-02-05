@@ -176,6 +176,83 @@ def solve():
 
 // TODO
 
+- 辺の情報
+
+```
+1 2
+2 3
+2 4
+5 6
+6 7
+6 8
+7 8
+```
+
+- 補正後はこんな感じ
+
+```
+0 1
+1 2
+1 3
+4 5
+5 6
+5 7
+6 7
+```
+
+- 辺の情報は以下の通りに持つ
+
+![](https://i.imgur.com/eF6ZueB.jpg)
+
+``` Python
+sides_info = []
+visited_info = []
+has_open_circuit = True
+
+def dfs(current_node, previous_node):
+    global has_open_circuit
+    # 今いる頂点から行ける頂点を順に next に入れてループ
+    for next_node in sides_info[current_node]:
+        if next_node != previous_node:  # 行ってまた戻ることによる、閉路の誤検知を防ぐ
+            if visited_info[next_node]:
+                # 過去に訪れていれば閉路
+                has_open_circuit = False
+            else:
+                visited_info[next_node] = True
+                dfs(next_node, current_node)
+
+def solve():
+    number_of_nodes, number_of_sides = list(map(int, input().split()))
+    global sides_info
+    sides_info = [[] * number_of_nodes for _ in range(number_of_nodes)]
+    for _ in range(number_of_sides):
+        starting_node, end_node = list(map(int, input().split()))
+        starting_node -= 1  # データ構造のインデックスに補正する
+        end_node -= 1
+        sides_info[starting_node].append(end_node)  # それぞれのnodeとつながるnodeを辞書的に記録する（indexがnodeに対応）
+        sides_info[end_node].append(starting_node)  # 逆も同じ
+
+    # 訪れたことがあるか
+    global visited_info
+    visited_info = [False for _ in range(number_of_nodes)]
+
+    ans = 0
+    # 頂点をループ
+    for node_i in range(number_of_nodes):
+        if not visited_info[node_i]:  # 未探索のnodeの場合に調査を行う
+            global has_open_circuit
+            has_open_circuit = True
+            dfs(node_i, -1)
+            if has_open_circuit:
+                # 閉路がなければ木である
+                ans += 1
+    print(ans)
+```
+
+- 最終的な`visited_info`はこんな感じ。
+
+![](https://i.imgur.com/Om0FtbI.jpg)
+
 #### 参考
 
 https://qiita.com/saba/items/affc94740aff117d2ca9#%E4%BE%8B%E9%A1%8C-2-1-3%E8%BF%B7%E8%B7%AF%E3%81%AE%E6%9C%80%E7%9F%AD%E8%B7%AF
