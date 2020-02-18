@@ -36,8 +36,6 @@ def solve():
 
 #### ABC 076 C Dubious Document 2
 
-
-
 ### [例題 2\-2\-4　Saruman's Army \(POJ No\.3069\)](https://qiita.com/drken/items/e77685614f3c6bf86f44#%E4%BE%8B%E9%A1%8C-2-2-4sarumans-army-poj-no3069)
 
 ``` Python

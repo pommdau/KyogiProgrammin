@@ -36,33 +36,67 @@ def solve():
 
 ### [ABC 076 C Dubious Document 2　(辞書順最小 Greedy の練習です)](https://atcoder.jp/contests/abc076/tasks/abc076_c)
 
+``` Python
+def solve():
+    input_string = input()
+    part_string = input()
 
+    for i in range(len(input_string) - len(part_string), -1, -1):
+        possible_part_string = input_string[i:i+len(part_string)]  # part_stringの可能性のある文字列
+        for j in range(len(part_string) + 1):  # 1つ多くループしているのは最後の処理のため
+            if j == len(part_string):
+                result = input_string[:i] + part_string + input_string[i + len(part_string):]
+                result = result.replace("?", "a")
+                print(result)
+                return  # 今回のテストケースの終了
+            if possible_part_string[j] == "?" or possible_part_string[j] == part_string[j]:
+                continue
+            else:  # 再度ずらして探索する
+                break
 
-- 正規表現を使ったやり方もある
+    print("UNRESTORABLE")
+```
+
+- 正規表現を使ったやり方もあります
 	- [C \- Dubious Document 2](https://ikatakos.com/pot/programming_algorithm/contest_history/atcoder/2017/1028_abc076)
 
 ``` Python
 import re
 
-def solve2(s, t):
-    s = s.replace('?', '.')
-    ls, lt = len(s), len(t)
-    if ls < lt:
-        return 'UNRESTORABLE'
-    ans = []
-    for i in range(ls - lt + 1): # iは「ls-lt」までを取る
-        m = re.match(s[i:i + lt], t)
-        if m is None:
-            continue
-        ans.append((s[:i] + t + s[i + lt:]).replace('.', 'a')) # 正規表現で見つかったらt以外の「.」はaとする
-
-    if not ans: # 見つからない場合
-        return 'UNRESTORABLE'
-    return min(ans) # 見つかったもののうち一番小さいものを採用する
 
 def solve():
-    s = input().strip() # ?tc????
-    t = input().strip() # coder
+    input_string = input()
+    part_string = input()
 
-    print(solve2(s, t))
+    input_string = input_string.replace('?', '.')
+    length_of_input_string, length_of_part_string = len(input_string), len(part_string)
+    if length_of_input_string < length_of_part_string:
+        print("UNRESTORABLE")
+
+    ans = []
+    for i in range(length_of_input_string - length_of_part_string + 1):  #
+        m = re.match(input_string[i:i+length_of_part_string], part_string)
+        if m is None:
+            continue
+        # 正規表現で見つかったらt以外の「.」はaとする
+        ans.append((input_string[:i] + part_string + input_string[i + length_of_part_string:]).replace('.', 'a'))
+
+    if not ans:  # 見つからなかった場合
+        print("UNRESTORABLE")
+    else:
+        print(min(ans))  # 見つかったもののうち一番小さいものを採用する
 ```
+
+### [ABC 007 B 辞書式順序　(そもそも辞書次式順序とはなにか)](https://atcoder.jp/contests/abc007/tasks/abc007_2)
+
+``` Python
+def solve():
+    input_string = input()
+    if input_string == "a":
+        print("-1")
+    else:
+        print("a")
+```
+
+### [ABC 009 C 辞書式順序ふたたび　(かなり難しいです)](https://atcoder.jp/contests/abc009/tasks/abc009_3)
+
