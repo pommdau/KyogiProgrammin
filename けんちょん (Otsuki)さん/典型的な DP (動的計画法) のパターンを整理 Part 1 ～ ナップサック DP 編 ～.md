@@ -9,20 +9,19 @@
 
 ``` Python
 def solve():
-    # input
-    n = int(input())
-    a = list(map(int, input().split()))
+    number_of_input = int(input())
+    numbers = list(map(int, input().split()))
 
-    # calc
-    dp = []
-    dp.append(0) # dp[0]:何も選ばない状態、の総和の最大値は0
-    for i in range(n):
-        dp.append(max(dp[i], dp[i] + a[i])) # e.g. (i=2)dp[3] = max(dp[2], dp[2]+a[2])
+    dp = []  # dp[i] := numbers[0],numbers[1],...,numbers[i-1]の総和の最大値
+    dp.append(0)  # dp[0]:何も選ばない状態、の総和の最大値は0
 
-    print(dp[n])
+    for i in range(number_of_input):
+        dp.append(max(dp[i], dp[i] + numbers[i]))
+
+    print(dp[number_of_input])
 ```
 
-inputの例
+- `input`
 
 ``` Python
 3
@@ -58,13 +57,44 @@ def solve():
     for i in range(n):
         for w in range(W+1):    # 重さの最大値も対象に含めることに注意
             # dp[n+1][w] :=
-            # (a[0],...,a[n]までの品物の中から大きさがwを超えない組み合わせの最大値)
+            # (a[0],...,a[n]までの品物の中から重さがwを超えない組み合わせの最大値)
             if (w >= weight[i]):
                 dp[i+1][w] = max(dp[i][w-weight[i]] + value[i], dp[i][w])
             else:
                 dp[i+1][w] = dp[i][w]
 
     print(dp[n][W]) # dp[n][W] := (a[0],...,a[n-1]の総和の最大値)
+```
+
+- （以下は変数の扱い方を変えただけ）
+
+``` Python
+WEIGHT_INDEX = 0
+VALUE_INDEX = 1
+
+
+def solve():
+    number_of_input = int(input())
+    items = [list(map(int, input().split())) for _ in range(number_of_input)]
+    limit_weight = int(input())
+
+    # DP初期条件: dp[0][w] = 0
+    # dp[i][w] := items[0]~items[i-1]から品物を選んで、重さが[w]を超えない場合の価値の最大値
+    dp = [[0 for _ in range(110)] for _ in range(10010)]
+
+    for item_i, item in enumerate(items):
+        for each_limit_weight in range(limit_weight + 1):
+            if item[WEIGHT_INDEX] <= each_limit_weight:  # itemが追加できる重量の場合
+                # 「item」を追加できる場合、価値が大きくなる方を採用する
+                # dp[item_i][each_limit_weight - item[WEIGHT_INDEX]] := 過去の情報を用いるイメージ
+                dp[item_i + 1][each_limit_weight] = \
+                    max(dp[item_i][each_limit_weight - item[WEIGHT_INDEX]] + item[VALUE_INDEX],
+                        dp[item_i][each_limit_weight]
+                        )
+            else:
+                dp[item_i + 1][each_limit_weight] = dp[item_i][each_limit_weight]
+
+    print(dp[number_of_input][limit_weight])
 ```
 
 - `input`は以下
@@ -77,7 +107,7 @@ def solve():
 2 1
 1 3
 5 85
-8
+9
 ```
 
 # 問題 3:　部分和問題　
@@ -119,104 +149,128 @@ def solve():
 # solve()
 ```
 
-# 問題 4:　部分和数え上げ問題　
+- 変数名変更ver
 
 ``` Python
 def solve():
+    number_of_items = int(input())    # N個の整数の配列a[N]
+    items = list(map(int, input().split()))  # itemの内容は重さ
+    sum_of_result = int(input())    # 目的の総和
 
-    MOD = 1000000009
+    # dp[item_i][sum] := items[0]~items[item_i-1]の中から選んで総和を[sum]とすることができるか
+    # +1は処理の兼ね合いでの下駄履かせ
+    dp = [[False for _ in range(number_of_items+1)] for _ in range(sum_of_result+1)]
+    dp[0][0] = True  # 何も選ばない場合の総和は0とする
 
-    N = int(input())    # N個の整数の配列a[N]
-    A = int(input())    # 目的の総和
-    a = list(map(int, input().split()))
+    for item_i, item in enumerate(items):
+        for each_sum in range(sum_of_result + 1):
+            dp[item_i+1][each_sum] |= dp[item_i][each_sum]  # itemを選ばない場合
+            if item <= each_sum:  # itemを選ぶ場合
+                dp[item_i+1][each_sum] |= dp[item_i][each_sum-item]
 
-    # DP Table
-    # dp[i][A] := (a[0],...,a[i-1])の中から選んで総和をjとすることが可能か
-    dp = [[0 for _ in range(110)] for _ in range(10010)]
-    dp[0][0] = 1 # 何も選ばない場合は1通りのみである
-
-    for n in range(N):
-        for A_i in range(A+1):
-            # dp[n][A_i]
-            # := n個の配列(a[0],...,a[n-1])を使って総和を「A_i」とすることができる場合
-            dp[n+1][A_i] += dp[n][A_i] # a[n]を選ばない場合
-            dp[n+1][A_i] %= MOD
-            if A_i >= a[n]:
-                # a[n]を選ぶ場合
-                # n+1個の配列(a[0],...,a[n]  )を使って総和をA_i       とすることができるか は
-                # n個の配列  (a[0],...,a[n-1])を使って総和をA_i - a[n]とすることができるか と等しい
-                dp[n+1][A_i] += dp[n][A_i - a[n]]
-                dp[n + 1][A_i] %= MOD
-
-    print(dp[N][A])
-
-# solve()
+    if dp[number_of_items][sum_of_result]:
+        print("YES")
+    else:
+        print("NO")
 ```
 
-input
+```sh
+3
+7 5 3
+10
+```
+
+```sh
+2
+9 7
+6
+```
+
+# 問題 4:　部分和数え上げ問題　
+
+- `MOD`はオーバーフローを懸念して、最後ではなくそれぞれの処理内で呼んでいる？
+
+``` Python
+NUMBER_FOR_MOD = 1000000009
+
+
+def solve():
+    number_of_items = int(input())
+    items = list(map(int, input().split()))
+    sum_of_result = int(input())
+
+    # dp[i][sum] := item[0]~item[i-1]の中から商品を選んで、総和をsumとできる組み合わせの数
+    dp = [[0 for _ in range(110)] for _ in range(10010)]
+    dp[0][0] = 1  # 総和が0となるのは、何も選ばない場合である
+
+    for item_i, item in enumerate(items):
+        for each_sum in range(sum_of_result+1):
+            dp[item_i + 1][each_sum] += dp[item_i][each_sum]  # itemを選ばない場合
+            dp[item_i + 1][each_sum] %= NUMBER_FOR_MOD
+            if item <= each_sum:  # itemを選ぶ場合、条件にあっていれば…
+                dp[item_i + 1][each_sum] += dp[item_i][each_sum - item]
+                dp[item_i + 1][each_sum] %= NUMBER_FOR_MOD
+
+    print(dp[number_of_items][sum_of_result])
+```
+
+- `input`
 
 ``` Python
 5
-12
 7 5 3 1 8
+12
 ```
 
 ``` Python
 4
-5
 4 1 1 1
+5
 ```
 
 # 問題 5:　最小個数部分和問題　
 
-![-w801](https://i.imgur.com/VkIBoc1.jpg)
-
 ``` Python
+INF = 1 << 29  # 十分大きい値にする, INT_MAX にしないのはオーバーフロー対策
+
+
 def solve():
+    number_of_items = int(input())
+    items = list(map(int, input().split()))
+    sum_of_result = int(input())
 
-    INF = 1<<29 # 十分に大きい値にする
-
-    N = int(input())    # N個の整数の配列a[N]
-    A = int(input())    # 目的の総和
-    a = list(map(int, input().split()))
-
-    # DP Table
-    # dp[i][A] := (a[0],...,a[i-1])の中から選んで総和をAとするとき、選ぶ整数の個数の最小値
+    # dp[i][sum] := item[0]~item[i-1]の中から商品を選んで、操作がsumとなるときの、選ぶ商品の個数の最小値
     dp = [[INF for _ in range(110)] for _ in range(10010)]
-    dp[0][0] = 0 # 何も選ばない場合は、つまり選ぶ整数の個数は0個である
+    dp[0][0] = 0  # 総和が0となるのは、何も選ばない場合である
 
-    for n in range(N):
-        for A_i in range(A+1):
-            # dp[n][A_i]
-            # := n個の配列(a[0],...,a[n-1])を使って総和を「A_i」とすることができる場合
-            dp[n+1][A_i] = min(dp[n+1][A_i], dp[n][A_i]) # a[n]を選ばない場合
+    for item_i, item in enumerate(items):
+        for each_sum in range(sum_of_result+1):
+            # itemを選ばない場合
+            dp[item_i + 1][each_sum] = min(dp[item_i + 1][each_sum],
+                                           dp[item_i][each_sum])
 
-            if A_i >= a[n]:
-                # a[n]を選ぶ場合
-                # n+1個の配列(a[0],...,a[n]  )を使って総和をA_i       とすることができるか は
-                # n個の配列  (a[0],...,a[n-1])を使って総和をA_i - a[n]とすることができるか と等しい
-                dp[n+1][A_i] = min(dp[n+1][A_i], dp[n][A_i - a[n]] + 1)
+            if item <= each_sum:  # itemを選ぶ場合、条件にあっていれば…
+                dp[item_i + 1][each_sum] = min(dp[item_i + 1][each_sum],
+                                               dp[item_i][each_sum - item] + 1)
 
-    if dp[N][A] < INF:
-        print(dp[N][A])
+    if dp[number_of_items][sum_of_result] < INF:
+        print(dp[number_of_items][sum_of_result])
     else:
         print(-1)
-
-# solve()
 ```
 
-input
+- `input`
 
 ``` Python
 5
-12
 7 5 3 1 8
+12
 ```
 
 ``` Python
 2
-6
 7 5
+6
 ```
 
 # 問題 6:　K個以内部分和問題
