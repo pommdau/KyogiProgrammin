@@ -1,7 +1,7 @@
 # [典型的な DP \(動的計画法\) のパターンを整理 Part 1 ～ ナップサック DP 編 ～](https://qiita.com/drken/items/a5e6fe22863b7992efdb)
 
-## 1 ナップサック DP とは
-
+# 1 ナップサック DP とは
+## 問題 1:　最大和問題
 - dp[0]が独自に定義されているので、添字の感覚が1つずれることに注意。
 - e.g. `d[3]:= (a[0],...,a[2]の総和の最大値)`
 
@@ -32,7 +32,8 @@ def solve():
 -9 -16
 ```
 
-## 2 ナップサック問題
+# 2 ナップサック問題
+## 問題 2:　ナップサック問題
 
 ![-w561](https://i.imgur.com/Wx7AYOB.jpg)
 
@@ -110,7 +111,8 @@ def solve():
 9
 ```
 
-# 問題 3:　部分和問題　
+# 3 部分和問題とその応用たち
+## 問題 3:　部分和問題　
 
 - `dp[i][j]`:=`(a[0],...,a[i-1])`の中から選んで総和を`j`とすることができるか。
     - e.g. `dp[3][10]` := `(a[0],a[1],a[2])`の中から選んで総和を`10`とすることができるか。
@@ -186,7 +188,7 @@ def solve():
 6
 ```
 
-# 問題 4:　部分和数え上げ問題　
+## 問題 4:　部分和数え上げ問題　
 
 - `MOD`はオーバーフローを懸念して、最後ではなくそれぞれの処理内で呼んでいる？
 
@@ -228,7 +230,7 @@ def solve():
 5
 ```
 
-# 問題 5:　最小個数部分和問題　
+## 問題 5:　最小個数部分和問題　
 
 ``` Python
 INF = 1 << 29  # 十分大きい値にする, INT_MAX にしないのはオーバーフロー対策
@@ -273,9 +275,81 @@ def solve():
 6
 ```
 
-# 問題 6:　K個以内部分和問題
+## 問題 6:　K個以内部分和問題
 
-# 問題 8:　最長共通部分列 (LCS) 問題
+``` Python
+INF = 1 << 29
+
+
+def solve():
+    number_of_items = int(input())
+    limit_number_of_selection = int(input())  # K個以内の整数を選ぶ
+    items = list(map(int, input().split()))
+    result_sum = int(input())
+
+    # dp[i][sum] := items[0]~items[i-1]から品物を選び、総和がsumとなる場合の、選んだ品物の個数の最小値
+    dp = [[INF for _ in range(110)] for _ in range(10010)]
+    dp[0][0] = 0  # 総和が0となるのは何も選ばない場合
+
+    for item_i, item in enumerate(items):
+        for each_sum in range(result_sum + 1):
+            # itemを選ばない場合
+            dp[item_i + 1][each_sum] = min(dp[item_i + 1][each_sum],
+                                           dp[item_i][each_sum])
+            # itemを選ぶ場合
+            if item <= each_sum:
+                dp[item_i + 1][each_sum] = min(dp[item_i + 1][each_sum],
+                                               dp[item_i][each_sum - item] + 1)
+
+    if dp[number_of_items][result_sum] <= limit_number_of_selection:
+        print("YES")
+    else:
+        print("NO")
+```
+
+``` Python
+3
+2
+7 5 3
+10
+```
+
+``` Python
+3
+1
+7 5 3
+10
+```
+
+## 問題 7:　個数制限付き部分和問題
+
+``` Python
+def solve():
+    number_of_balls = int(input())
+    items = list(map(int, input().split()))
+    each_number_of_item = list(map(int, input().split()))
+    result_sum = int(input())
+
+    # dp[i + 1][j] := item[0]~item[i]の中から選んで、総和jが作れるか
+    dp = [[False] * (result_sum + 1) for i in range(number_of_balls + 1)]
+    dp[0][0] = True
+
+    for item_i, item in enumerate(items):
+        for each_sum in range(result_sum + 1):
+            each_item_i = 0
+            while each_item_i <= each_number_of_item[item_i] and \
+                    each_item_i * items[item_i] <= each_sum:
+                # 各ボール(=items[item_i])をeach_item_i個使ったときの情報を記録する
+                dp[item_i + 1][each_sum] |= dp[item_i][each_sum - each_item_i * items[item_i]]
+                each_item_i += 1
+
+    if dp[number_of_balls][result_sum]:
+        print("Yes")
+    else:
+        print("No")
+```
+
+## 問題 8:　最長共通部分列 (LCS) 問題
 
 - いまいち理解できていない所。
 
