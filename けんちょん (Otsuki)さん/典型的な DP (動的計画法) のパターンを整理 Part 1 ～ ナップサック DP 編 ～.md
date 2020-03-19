@@ -1,5 +1,7 @@
 # [典型的な DP \(動的計画法\) のパターンを整理 Part 1 ～ ナップサック DP 編 ～](https://qiita.com/drken/items/a5e6fe22863b7992efdb)
 
+# TODO:dpの宣言のところで配列のサイズ逆になっている。適宜修正すること。
+
 # 1 ナップサック DP とは
 ## 問題 1:　最大和問題
 - dp[0]が独自に定義されているので、添字の感覚が1つずれることに注意。
@@ -37,42 +39,9 @@ def solve():
 
 ![-w561](https://i.imgur.com/Wx7AYOB.jpg)
 
-
-``` Python
-def solve():
-
-    # input
-    n = int(input()) # 品物の数がN個
-    weight = [0 for _ in range(110)]
-    value  = [0 for _ in range(110)]
-    for i in range(n):
-        weight[i], value[i] = list(map(int, input().split()))
-    W = int(input())
-
-    # calc
-    ## DP初期条件：dp[0][w] = 0
-    dp = [[0 for i in range(110)] for j in range(10010)]
-
-    # DP loop
-    # dp[i+1][w] := a[0]~a[i]の総和の最大値
-    for i in range(n):
-        for w in range(W+1):    # 重さの最大値も対象に含めることに注意
-            # dp[n+1][w] :=
-            # (a[0],...,a[n]までの品物の中から重さがwを超えない組み合わせの最大値)
-            if (w >= weight[i]):
-                dp[i+1][w] = max(dp[i][w-weight[i]] + value[i], dp[i][w])
-            else:
-                dp[i+1][w] = dp[i][w]
-
-    print(dp[n][W]) # dp[n][W] := (a[0],...,a[n-1]の総和の最大値)
-```
-
-- （以下は変数の扱い方を変えただけ）
-
 ``` Python
 WEIGHT_INDEX = 0
 VALUE_INDEX = 1
-
 
 def solve():
     number_of_input = int(input())
@@ -81,7 +50,7 @@ def solve():
 
     # DP初期条件: dp[0][w] = 0
     # dp[i][w] := items[0]~items[i-1]から品物を選んで、重さが[w]を超えない場合の価値の最大値
-    dp = [[0 for _ in range(110)] for _ in range(10010)]
+    dp = [[0 for _ in range(10010)] for _ in range(110)]
 
     for item_i, item in enumerate(items):
         for each_limit_weight in range(limit_weight + 1):
@@ -119,39 +88,6 @@ def solve():
 
 
 ![-w827](https://i.imgur.com/MRrlALj.jpg)
-
-``` Python
-def solve():
-
-    N = int(input())    # N個の整数の配列a[N]
-    A = int(input())    # 目的の総和
-    a = list(map(int, input().split()))
-
-    # DP Table
-    # dp[i][A] := (a[0],...,a[i-1])の中から選んで総和をjとすることが可能か
-    dp = [[False for _ in range(110)] for _ in range(10010)]
-    dp[0][0] = True # 何も選ばない場合に総和は0となる
-
-    for n in range(N):
-        for A_i in range(A+1):
-            # dp[n][A_i]
-            # := n個の配列(a[0],...,a[n-1])を使って総和を「A_i」とすることができるか
-            dp[n+1][A_i] |= dp[n][A_i] # a[n]を選ばない場合
-            if A_i >= a[n]:
-                # a[n]を選ぶ場合
-                # n+1個の配列(a[0],...,a[n]  )を使って総和をA_i       とすることができるか は
-                # n個の配列  (a[0],...,a[n-1])を使って総和をA_i - a[n]とすることができるか と等しい
-                dp[n+1][A_i] |= dp[n][A_i - a[n]]
-
-    if dp[N][A]:
-        print("YES")
-    else:
-        print("NO")
-
-# solve()
-```
-
-- 変数名変更ver
 
 ``` Python
 def solve():
@@ -351,28 +287,32 @@ def solve():
 
 ## 問題 8:　最長共通部分列 (LCS) 問題
 
-- いまいち理解できていない所。
+- [アルゴリズム1000本ノック \#3\. Longest common subsequence](https://qiita.com/_rdtr/items/c49aa20f8d48fbea8bd2)
+    - この記事が視覚的に分かりやすい。
+
+> 次は `Table[1][2]` で, `S1[1] == S2[2]` となっています! したがってLCSの長さを1伸ばすことができます. ここで私たちは同時に,  **Table[0][1] の状態から斜めにしかこのセルに到達できない** ことに気づきます. `Table[0][2]` と `Table[1][1]` においては, `S1[1]` あるいは `S2[2]` (= `"2"`) が既に考慮済のためです.
+
+- ここがまだ腑に落ちないけど、一緒のタイミングで末尾が同じじゃないとカウントできない、みたいな認識であってるのかな。
 
 ``` Python
 def solve():
-    S = input()
-    T = input()
+    first_sentense = input()
+    second_sentense = input()
 
     # dp[s_i + 1][t_i + 1] := Sのs_i文字目までと、Tのt_i文字目までのLCSの長さ
     dp = [[0 for _ in range(1010)] for _ in range(1010)]
 
-    for s_i in range(len(S)):
-        for t_i in range(len(T)):
-            # print("(S[" + str(s_i) + "], T[" + str(t_i) + "]) = " + "(" + S[s_i] + ", " + T[t_i] + ")")
-            if S[s_i] == T[t_i]: # ここで初めてS[s_i], T[t_i]同士を比較する
-                dp[s_i + 1][t_i + 1] = max(dp[s_i + 1][t_i + 1], dp[s_i][t_i] + 1)
-                # print("インクリメントされました")
-            dp[s_i + 1][t_i + 1] = max(dp[s_i + 1][t_i + 1], dp[s_i + 1][t_i])
-            dp[s_i + 1][t_i + 1] = max(dp[s_i + 1][t_i + 1], dp[s_i][t_i + 1])
+    for first_i in range(len(first_sentense)):
+        for second_i in range(len(second_sentense)):
+            print("(S[" + str(first_i) + "], T[" + str(second_i) + "]) = " + "(" + first_sentense[first_i] + ", " + second_sentense[second_i] + ")")
+            if first_sentense[first_i] == second_sentense[second_i]:  # LCSが長くなる場合
+                dp[first_i + 1][second_i + 1] = max(dp[first_i + 1][second_i + 1],
+                                                    dp[first_i][second_i] + 1)
 
-    print(dp[len(S)][len(T)])
-
-# solve()
+            # LCSの長さが変わらない場合
+            dp[first_i + 1][second_i + 1] = max(dp[first_i + 1][second_i + 1], dp[first_i + 1][second_i])
+            dp[first_i + 1][second_i + 1] = max(dp[first_i + 1][second_i + 1], dp[first_i][second_i + 1])
+    print(dp[len(first_sentense)][len(second_sentense)])
 ```
 
 - input
@@ -387,33 +327,5 @@ pirikapirirara
 poporinapeperuto
 ```
 
-- 探索イメージ
+## [問題 9:　最小コスト弾性マッチング問題](https://qiita.com/drken/items/a5e6fe22863b7992efdb#%E5%95%8F%E9%A1%8C-9%E6%9C%80%E5%B0%8F%E3%82%B3%E3%82%B9%E3%83%88%E5%BC%BE%E6%80%A7%E3%83%9E%E3%83%83%E3%83%81%E3%83%B3%E3%82%B0%E5%95%8F%E9%A1%8C)
 
-``` Python
-case : test_1
-(S[0], T[0]) = (a, a)
-(S[0], T[1]) = (a, c)
-(S[0], T[2]) = (a, b)
-(S[0], T[3]) = (a, e)
-(S[0], T[4]) = (a, f)
-(S[1], T[0]) = (b, a)
-(S[1], T[1]) = (b, c)
-(S[1], T[2]) = (b, b)
-(S[1], T[3]) = (b, e)
-(S[1], T[4]) = (b, f)
-(S[2], T[0]) = (c, a)
-(S[2], T[1]) = (c, c)
-(S[2], T[2]) = (c, b)
-(S[2], T[3]) = (c, e)
-(S[2], T[4]) = (c, f)
-(S[3], T[0]) = (d, a)
-(S[3], T[1]) = (d, c)
-(S[3], T[2]) = (d, b)
-(S[3], T[3]) = (d, e)
-(S[3], T[4]) = (d, f)
-(S[4], T[0]) = (e, a)
-(S[4], T[1]) = (e, c)
-(S[4], T[2]) = (e, b)
-(S[4], T[3]) = (e, e)
-(S[4], T[4]) = (e, f)
-```
