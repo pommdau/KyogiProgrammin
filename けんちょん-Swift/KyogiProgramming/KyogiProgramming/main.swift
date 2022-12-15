@@ -7,36 +7,18 @@
 
 import Foundation
 
-// 二重ループの全探索 5
-// https://algo-method.com/tasks/237
-
-// MARK: Input Functions
-
-private func readInt() -> Int {
-    Int(readLine()!)!
+func main() {
+    guard let line1 = readLine() else { fatalError("no input")}
+    let results = logicFunction([line1])
+    for result in results {
+        print(result)
+    }
 }
 
-private func readNewLineStringArray(_ count: Int) -> [String] {
-    precondition(count > 0)
-    return (1...count).map { _ in readLine()! }
+#if !DEBUG
+main()
+#endif
+
+func logicFunction(_: [String]) -> [String] {
+    return ["1"]
 }
-
-// MARK: Inputs
-
-let N = readInt()
-precondition(1 <= N && N <= 100)
-
-let ss = readNewLineStringArray(N)
-precondition(ss.count == N)
-precondition(ss.allSatisfy { $0.count <= 100 })
-
-// MARK: Other Functions
-
-private extension String {
-    var isPalindrome: Bool { self == String(self.reversed()) }
-}
-
-// MARK: Main
-
-print(ss.lazy.filter { $0.isPalindrome } .count)
-
