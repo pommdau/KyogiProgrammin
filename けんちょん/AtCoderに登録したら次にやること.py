@@ -4,14 +4,15 @@ import os
 
 # solveの中に記述，提出時はsolve()のコメントアウトを外して
 # ここから
+
+
 def solve():
-    a, b, c = list(map(int, input().split()))
-    if a <= c and c <= b :
-        print("Yes")
-    else:
-        print("No")
+    s: str = input()
+    print(s.count('1'))
+
 # solve()
 # ここまで
+
 
 test_path = 'test_case'
 FILES = os.listdir(test_path)

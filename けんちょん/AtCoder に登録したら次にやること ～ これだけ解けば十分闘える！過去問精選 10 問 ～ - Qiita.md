@@ -51,12 +51,12 @@ solve()
 
 ``` Python
 def solve():
-    a,b = list(map(int, input().split()))
-    product = a * b
-    if (product % 2 == 0):
-        print('Even')
+    number1, number2 = list(map(int, input().split()))
+    odd = number1 * number2
+    if odd % 2 == 0:
+        print("Even")
     else:
-        print('Odd')
+        print("Odd")
 # solve()
 ```
 
@@ -74,19 +74,19 @@ def solve():
     print(s.count('1'))
 # solve()
 ##### ここまで
+```
 
+```python
+def solve():
+    s: str = input()
+    count: int = 0
+    for number_str in s:
+        if int(number_str) == 1:
+            count += 1
 
-# テストケース実行部分
-test_path = 'test_case'
-FILES = os.listdir(test_path)
-print('test case => %s\n/Users/ikeuchihiroki/PycharmProjects/Kyopro/test_case' % FILES)
-for FILE in FILES:
-    fdr = os.open(test_path + '/' + FILE, os.O_RDONLY)
-    print("\ncase : %s" % FILE)
-    os.dup2(fdr, sys.stdin.fileno())
-    solve()
+    print(count)
 
-print("\n**********\nfinish")
+# solve()
 ```
 
 ## 3問目 ABC081B - Shift only
