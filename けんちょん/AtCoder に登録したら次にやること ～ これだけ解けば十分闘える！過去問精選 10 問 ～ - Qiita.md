@@ -90,7 +90,7 @@ def solve():
 ```
 
 ## 3問目 ABC081B - Shift only
-
+- [B \- Shift only 解説](https://atcoder.jp/contests/abc081/tasks/abc081_b)
 - [Pythonの組み込み関数all\(\), any\(\)の使い方 \| note\.nkmk\.me](https://note.nkmk.me/python-all-any-usage/)
 
 > すべての要素がTrueか判定: all()
@@ -119,57 +119,44 @@ def solve():
     print(cnt)
 
 # solve()
-##### ここまで
+```
 
+```python
+def solve():
+    n: int = int(input())
+    a_list: List[int] = list(map(int, input().split()))
+    counter: int = 0
+    while True:
+        can_deviding = True
+        for a_n in a_list:
+            if a_n % 2 != 0:
+                can_deviding = False
+                break
+        if not can_deviding:
+            break
 
-# テストケース実行部分
-test_path = 'test_case'
-FILES = os.listdir(test_path)
-print('test case => %s\n/Users/ikeuchihiroki/PycharmProjects/Kyopro/test_case' % FILES)
-for FILE in FILES:
-    fdr = os.open(test_path + '/' + FILE, os.O_RDONLY)
-    print("\ncase : %s" % FILE)
-    os.dup2(fdr, sys.stdin.fileno())
-    solve()
+        counter += 1
+        a_list = [a_n / 2 for a_n in a_list]
 
-print("\n**********\nfinish")
+    print(counter)
 ```
 
 ## 4問目 ABC087B - Coins
+[B \- Coins 解説](https://atcoder.jp/contests/abc087/tasks/abc087_b)
 
 ``` Python
-# -*- coding: utf-8 -*-
-import sys
-import os
-
-##### solveの中に記述，提出時はsolve()のコメントアウトを外して
-##### ここから
 def solve():
-    A, B, C, X = [int(input()) for _ in range(4)]
-    ans = 0
-    for a_i in range(A+1):
-        for b_i in range(B+1):
-            for c_i in range(C+1):
-                sum = 500 * a_i + 100 * b_i + 50 * c_i
-                if (sum == X):
-                    ans += 1
-    print(ans)
+    a, b, c, x = [int(input()) for i in range(4)]
+    count = 0
+    for a_i in range(a + 1):
+        for b_i in range(b + 1):
+            for c_i in range(c + 1):
+                sum = a_i * 500 + b_i * 100 + c_i * 50
+                if sum == x:
+                    count += 1
+    print(count)
 
 # solve()
-##### ここまで
-
-
-# テストケース実行部分
-test_path = 'test_case'
-FILES = os.listdir(test_path)
-print('test case => %s\n/Users/ikeuchihiroki/PycharmProjects/Kyopro/test_case' % FILES)
-for FILE in FILES:
-    fdr = os.open(test_path + '/' + FILE, os.O_RDONLY)
-    print("\ncase : %s" % FILE)
-    os.dup2(fdr, sys.stdin.fileno())
-    solve()
-
-print("\n**********\nfinish")
 ```
 
 ## 5問目 ABC083B - Some Sums
@@ -193,19 +180,31 @@ def solve():
 
 # solve()
 ##### ここまで
+```
+
+```python
+def get_sum_of_digit(number: int) -> int:
+    sum = 0
+    while(number > 0):
+        sum += number % 10
+        number = int(number / 10)  # キャストをしないとFloatがでてきてしまうので注意. math.floor()を使ってもいいか
+
+    return sum
 
 
-# テストケース実行部分
-test_path = 'test_case'
-FILES = os.listdir(test_path)
-print('test case => %s\n/Users/ikeuchihiroki/PycharmProjects/Kyopro/test_case' % FILES)
-for FILE in FILES:
-    fdr = os.open(test_path + '/' + FILE, os.O_RDONLY)
-    print("\ncase : %s" % FILE)
-    os.dup2(fdr, sys.stdin.fileno())
-    solve()
+def solve():
+    n, a, b = list(map(int, input().split()))
+    count = 0
+    for n_i in range(n + 1):
+        if n_i == 0:
+            continue
+        
+        # if a <= sum([int(char) for char in str(n_i)]) <= b:
+        if a <= get_sum_of_digit(n_i) <= b:
+            count += n_i
 
-print("\n**********\nfinish")
+    print(count)
+# solve()
 ```
 
 ## 第6問 ABC 088 B - Card Game for Two
@@ -231,6 +230,23 @@ def solve():
     print(score_of_Alice - score_of_Bob)
 ```
 
+```python
+def solve():
+    n = int(input())
+    a_list = list(map(int, input().split()))
+    a_list.sort(reverse=True)
+    alice_points = 0
+    bob_points = 0
+    for card_i in range(n):
+        if card_i % 2 == 0:
+            alice_points += a_list[card_i]
+        else:
+            bob_points += a_list[card_i]
+
+    print(alice_points - bob_points)
+# solve()
+```
+
 ## 第7問 ABC 085 B - Kagami Mochi
 
 ``` Python
@@ -251,26 +267,37 @@ def solve():
 ##### ここまで
 ```
 
+```python
+def solve():
+    n = int(input())
+    d_list = [int(input()) for d_i in range(n)]
+    d_dict: Dict[int, int] = {i: 0 for i in range(110)}
+    
+    for d_n in d_list:
+        d_dict[d_n] += 1
+
+    count = 0
+    for number in range(101):
+        if d_dict[number] > 0:
+            count += 1
+
+    print(count)
+```
+
 ## 第8問 ABC 085 C - Otoshidama
 
 ``` Python
-# -*- coding: utf-8 -*-
-import sys
-import os
-
-##### solveの中に記述，提出時はsolve()のコメントアウトを外して
-##### ここから
 def solve():
-    N, Y = list(map(int, input().split()))
-    for i in range(N + 1):
-        for j in range(N + 1 - i):
-            if i * 10000 + j * 5000 + (N - i - j) * 1000 == Y:
-                print(i, j, N - i - j)
-                exit()
-    print("-1, -1, -1")
-
-# solve()
-##### ここまで
+    number_of_bills, sum_of_bills = list(map(int, input().split()))
+    for x in range(number_of_bills + 1):
+        for y in range(number_of_bills + 1 - x):
+            z = number_of_bills - x - y
+            sum = 10000 * x + 5000 * y + 1000 * z
+            if sum == sum_of_bills:
+                print(x, y, z)
+                return
+    
+    print(-1, -1, -1)
 ```
 
 ## 9問目 ABC049C - 白昼夢 / Daydream
@@ -321,3 +348,33 @@ def solve():
 ```
 
 ## 10問目 ABC086C - Traveling
+
+```python
+def solve():
+    n = int(input())
+    plans = []
+    for _ in range(n):
+        plans.append(list(map(int, input().split())))
+
+    last_t = last_x = last_y = 0
+    for current_t, current_x, current_y in plans:
+        # 進んだ値
+        diff_t = current_t - last_t
+        diff_x = abs(current_x - last_x)  # 絶対値に注意
+        diff_y = abs(current_y - last_y)
+
+        # tとx+yの偶数奇数は一致
+        # 1秒間に進めるのは1のみ(diff_t秒間に進めるのはdiff_t以下)
+        if current_t % 2 == (current_x + current_y) % 2 and diff_t >= diff_x + diff_y:
+            last_t = current_t
+            last_x = current_x
+            last_y = current_y
+        else:
+            print("No")
+            return
+    print("Yes")
+```
+
+## もう一度
+- 第7問 ABC 085 B - Kagami Mochi
+- 10問目 ABC086C - Traveling
