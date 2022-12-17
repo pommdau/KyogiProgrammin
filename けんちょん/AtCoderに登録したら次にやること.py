@@ -20,28 +20,34 @@ import math
 
 
 def solve():
-    n = int(input())
-    plans = []
-    for _ in range(n):
-        plans.append(list(map(int, input().split())))
+    number_of_rows, number_of_columns = list(map(int, input().split()))
+    field: List[str] = []
+    for _ in range(number_of_rows):
+        field.append(list(input()))
 
-    last_t, last_x, last_y = 0, 0, 0
-    for current_t, current_x, current_y in plans:
-        # 進んだ値
-        diff_t = current_t - last_t
-        diff_x = abs(current_x - last_x)  # 絶対値に注意
-        diff_y = abs(current_y - last_y)
+    for row_i in range(number_of_rows):
+        for column_i in range(number_of_columns):
+            if field[row_i][column_i] == "#":
+                continue
+            
+            # 上下左右8マスの確認
+            number_of_bombs = 0
+            diff_list = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+            for diff in diff_list:
+                target_row = row_i + diff[1]
+                target_column = column_i + diff[0]
+                if target_row < 0 or target_row > number_of_rows - 1:
+                    continue
+                if target_column < 0 or target_column > number_of_columns - 1:
+                    continue
+                if field[target_row][target_column] == "#":
+                    number_of_bombs += 1
+            field[row_i][column_i] = number_of_bombs
 
-        # tとx+yの偶数奇数は一致
-        # 1秒間に進めるのは1のみ(diff_t秒間に進めるのはdiff_t以下)
-        if current_t % 2 == (current_x + current_y) % 2 and diff_t >= diff_x + diff_y:
-            last_t = current_t
-            last_x = current_x
-            last_y = current_y
-        else:
-            print("No")
-            return
-    print("Yes")
+    for row_i in range(number_of_rows):
+        for column_i in range(number_of_columns):
+            print(field[row_i][column_i], end="")
+        print("")
 
 # solve()
 # ここまで

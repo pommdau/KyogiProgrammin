@@ -375,6 +375,76 @@ def solve():
     print("Yes")
 ```
 
+## ここまで解いたら
+### グリッドに関する処理
+#### [B \- Minesweeper 解説](https://atcoder.jp/contests/abc075/tasks/abc075_b)
+- [ABC075\-B \- Minesweeper を解く](https://kenkoro.hatenablog.com/entry/2019/05/26/000000)
+
+```python
+def solve():
+    number_of_rows, number_of_columns = list(map(int, input().split()))
+    field: List[str] = []
+    for _ in range(number_of_rows):
+        field.append(list(input()))
+
+    for row_i in range(number_of_rows):
+        for column_i in range(number_of_columns):
+            if field[row_i][column_i] == "#":
+                continue
+            
+            # 上下左右8マスの確認
+            number_of_bombs = 0
+            diff_list = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+            for diff in diff_list:
+                target_row = row_i + diff[1]
+                target_column = column_i + diff[0]
+                if target_row < 0 or target_row > number_of_rows - 1:
+                    continue
+                if target_column < 0 or target_column > number_of_columns - 1:
+                    continue
+                if field[target_row][target_column] == "#":
+                    number_of_bombs += 1
+            field[row_i][column_i] = number_of_bombs
+
+    for row_i in range(number_of_rows):
+        for column_i in range(number_of_columns):
+            print(field[row_i][column_i], end="")
+        print("")
+```
+
+#### [C \- Grid Repainting 2 解説](https://atcoder.jp/contests/abc096/tasks/abc096_c)
+
+```python
+def solve():
+    h, w = list(map(int, input().split()))
+    field: List[str] = []
+    for _ in range(h):
+        field.append(list(input()))
+
+    for row_i in range(h):
+        for column_i in range(w):
+            if field[row_i][column_i] == ".":
+                continue
+            
+            # 上下左右が"#"かどうかを確認
+            can_fill_in_close_cell = (row_i > 0 and field[row_i - 1][column_i] == "#") or \
+                (row_i < h - 1 and field[row_i + 1][column_i] == "#") or \
+                (column_i > 0 and field[row_i][column_i - 1] == "#") or \
+                (column_i < w - 1 and field[row_i][column_i + 1] == "#")
+
+            if can_fill_in_close_cell:
+                continue
+            else:
+                print("No")
+                return
+
+    print("Yes")
+```
+
+### 区間の重なりを求める処理
+#### [B \- Two Switches](https://atcoder.jp/contests/abc070/tasks/abc070_b)
+
+
 ## もう一度
 - 第7問 ABC 085 B - Kagami Mochi
 - 10問目 ABC086C - Traveling
