@@ -444,6 +444,168 @@ def solve():
 ### 区間の重なりを求める処理
 #### [B \- Two Switches](https://atcoder.jp/contests/abc070/tasks/abc070_b)
 
+```python
+def solve():
+    a, b, c, d = list(map(int, input().split()))
+    time = 0
+    for t in range(110):
+        if (a <= t < b) and (c <= t < d):
+            time += 1
+    
+    print(time)
+```
+
+- 公式の解説の通り
+
+```python
+def solve():
+    a, b, c, d = list(map(int, input().split()))
+    time = min(b, d) - max(a, c)
+    if time < 0:
+        time = 0
+    print(time)
+```
+
+### 答えを 1000000007 (など) で割った余りで求める
+#### [B \- Training Camp ](https://atcoder.jp/contests/abc055/tasks/abc055_b)
+
+```python
+def solve():
+    n = int(input())
+    power = 1
+    for n_i in range(n + 1):
+        if n_i == 0:
+            continue
+        power *= n_i
+        power = power % (pow(10, 9) + 7)
+    print(power)
+```
+
+### 数学的問題
+#### [B \- AtCoDeerくんとボール色塗り](https://atcoder.jp/contests/abc046/tasks/abc046_b)
+
+```python
+def solve():
+    number_of_balls, number_of_colors = list(map(int, input().split()))
+    # k * (k - 1)^(n-1)
+    result = number_of_colors
+    result = result * pow(number_of_colors - 1, number_of_balls - 1)
+    print(result)
+
+```
+
+#### [B \- Between a and b](https://atcoder.jp/contests/abc048/tasks/abc048_b)
+
+- [AtCoder Regular Contest 064/ Beginner Contest 048 解説放送](https://www.youtube.com/watch?v=btAAdZqTCok)
+    - 16:00~
+
+```python
+
+def solve():
+    left, r, x = list(map(int, input().split()))
+    # [0, R] - [0, L - 1]
+    first = r // x + 1
+    second = (left - 1) // x + 1
+    if left == 0:
+        print(first)
+    else:
+        print(first - second)
+```
+
+### 状態がループするシミュレーション処理
+#### [B \- Choose Integers](https://atcoder.jp/contests/abc060/tasks/abc060_b)
+
+- [ABC060: B \- Choice Integers（整数を扱う基本的な問題）](https://pyteyon.hatenablog.com/entry/2018/11/26/203000)
+- [ABC060\-B 備忘録 p\.8](https://note.com/artechum/n/ne0bc05dd928e)
+
+### [B \- Trained?](https://atcoder.jp/contests/abc065/tasks/abc065_b)
+
+```python
+def solve():
+    number_of_buttons = int(input())
+    buttons = []
+    current_button_index = 0
+    for _ in range(number_of_buttons):
+        buttons.append(int(input()))
+
+    max_operation = number_of_buttons
+    for operation_i in range(max_operation):
+        current_button_index = buttons[current_button_index] - 1
+        if current_button_index == 1:
+            print(operation_i + 1)
+            return
+    
+    print(-1)
+```
+
+### 累積和
+#### [C \- Candies](https://atcoder.jp/contests/abc087/tasks/arc090_a)
+- [pythonでsumの計算ができない。](https://teratail.com/questions/341585)
+- [AtCoder Regular Contest 090/ Beginner Contest 087 解説放送](https://www.youtube.com/watch?v=br3ze-KC6WA)
+
+```python
+def solve():
+    number_of_candy = int(input())
+    field: List[List[int]] = []
+    for _ in range(2):
+        field.append(list(map(int, input().split())))
+
+    max_sum = 0
+    # どのcolumnで下に移動したか
+    for down_column_i in range(number_of_candy):
+        sum_ = 0
+        sum_ += sum(field[0][:down_column_i + 1])
+        sum_ += sum(field[1][down_column_i:])
+        max_sum = max(max_sum, sum_)
+
+    print(max_sum)
+```
+
+
+### bit 全探索
+#### [C \- Train Ticket](https://atcoder.jp/contests/abc079/tasks/abc079_c)
+- [こわくないbit全探索2 基本編1: 簡単な例題でbit全探索をやってみよう！【競プロ解説】](https://qiita.com/u2dayo/items/8c1601a61841540b4947#%E9%81%B8%E3%81%B3%E6%96%B9%E3%81%8C%E3%82%8F%E3%81%8B%E3%82%8C%E3%81%B0%E5%90%88%E8%A8%88%E3%82%92%E6%B1%82%E3%82%81%E3%81%A6%E5%88%A4%E5%AE%9A%E3%81%99%E3%82%8B%E3%81%AE%E3%81%AF%E7%B0%A1%E5%8D%98)
+
+```python
+from itertools import product  # bit全探索
+
+def solve():
+    abcd = input()
+    a = int(abcd[0])
+    b = int(abcd[1])
+    c = int(abcd[2])
+    d = int(abcd[3])
+    
+    for pro in product((0, 1), repeat=3):
+        result = a
+        result_str = f'{a}'
+
+        if pro[0] == 0:
+            result += b
+            result_str += f'+{b}'
+        else:
+            result -= b
+            result_str += f'-{b}'
+        
+        if pro[1] == 0:
+            result += c
+            result_str += f'+{c}'
+        else:
+            result -= c
+            result_str += f'-{c}'
+
+        if pro[2] == 0:
+            result += d
+            result_str += f'+{d}'
+        else:
+            result -= d
+            result_str += f'-{d}'
+
+        if result == 7:
+            result_str += "=7"
+            print(result_str)
+            return
+```
 
 ## もう一度
 - 第7問 ABC 085 B - Kagami Mochi
