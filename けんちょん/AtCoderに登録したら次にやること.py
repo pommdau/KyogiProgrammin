@@ -19,25 +19,41 @@ import os
 from typing import List, Dict
 import math
 from itertools import product  # bit全探索
-from itertools import permutations
+from itertools import combinations
+
 
 def solve():
-    number_of_words = int(input())
-    words = []
-    for _ in range(number_of_words):
-        words.append(input())
+    number_of_rows, number_of_columns = list(map(int, input().split()))
+    field = []
+    for _ in range(number_of_rows):
+        line = []
+        for char in input():
+            line.append(char)
+        field.append(line)
+    t = input()
+    length_of_t = len(t)
+
+    count = 0
+    for row_i in range(number_of_rows):
+        for column_i in range(number_of_columns):
+            created_word = field[row_i][column_i]
+
+            # 右に移動可能な場合
+            if column_i < number_of_columns - 1:
+                created_word += field[row_i][column_i + 1]
+                # 下に移動可能な場合
+                if row_i < number_of_rows - 1:
+                    created_word += field[row_i + 1][column_i + 1]
+            else:
+                # 下に移動可能な場合
+                if row_i < number_of_rows - 1:
+                    created_word += field[row_i + 1][column_i]
+
+            if created_word == t:
+                count += 1
     
-    coined_words = []
-    for first_word, second_word in permutations(words, 2):
-        first_word_suffix = first_word[-2:]
-        second_word_suffix = second_word[:2]
-        if first_word_suffix == second_word_suffix:
-            coined_word = first_word + second_word[2:]
-            coined_words.append(coined_word)
-    if len(coined_words) == 0:
-        print(-1)
-    else:
-        print(max([len(coined_word) for coined_word in coined_words]))
+    print(count)
+
 
 # solve()
 
