@@ -348,6 +348,7 @@ def solve():
 ```
 
 ## 10問目 ABC086C - Traveling
+- [C \- Traveling ](https://atcoder.jp/contests/abc086/tasks/arc089_a)
 
 ```python
 def solve():

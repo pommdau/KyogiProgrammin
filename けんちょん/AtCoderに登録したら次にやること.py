@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-from typing import List, Dict
-import math
 
 # solveの中に記述，提出時はsolve()のコメントアウトを外して
 # ここから
@@ -18,40 +16,32 @@ import math
 # n1, n2, n3 = list(map(int, input().split()))  # 整数
 # n1, n2, n3 = list(map(float, input().split()))  # 浮動小数点数
 
+from typing import List, Dict
+import math
+from itertools import product  # bit全探索
+
 
 def solve():
-    number_of_rows, number_of_columns = list(map(int, input().split()))
-    field: List[str] = []
-    for _ in range(number_of_rows):
-        field.append(list(input()))
+    number_of_rods = int(input())
+    rods = list(map(int, input().split()))
+    rods_dict = {i: 0 for i in range(51)}
 
-    for row_i in range(number_of_rows):
-        for column_i in range(number_of_columns):
-            if field[row_i][column_i] == "#":
-                continue
-            
-            # 上下左右8マスの確認
-            number_of_bombs = 0
-            diff_list = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
-            for diff in diff_list:
-                target_row = row_i + diff[1]
-                target_column = column_i + diff[0]
-                if target_row < 0 or target_row > number_of_rows - 1:
-                    continue
-                if target_column < 0 or target_column > number_of_columns - 1:
-                    continue
-                if field[target_row][target_column] == "#":
-                    number_of_bombs += 1
-            field[row_i][column_i] = number_of_bombs
+    for rod in rods:
+        rods_dict[rod] += 1
 
-    for row_i in range(number_of_rows):
-        for column_i in range(number_of_columns):
-            print(field[row_i][column_i], end="")
-        print("")
+    can_create_rectangle = False
+    for rods_count in rods_dict.values():
+        if rods_count >= 4:
+            can_create_rectangle = True
+
+    if can_create_rectangle:
+        print("YES")
+    else:
+        print("NO")
 
 # solve()
-# ここまで
 
+# ここまで
 
 test_path = 'test_case'
 FILES = os.listdir(test_path)
