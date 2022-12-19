@@ -19,25 +19,25 @@ import os
 from typing import List, Dict
 import math
 from itertools import product  # bit全探索
-
+from itertools import permutations
 
 def solve():
-    number_of_rods = int(input())
-    rods = list(map(int, input().split()))
-    rods_dict = {i: 0 for i in range(51)}
-
-    for rod in rods:
-        rods_dict[rod] += 1
-
-    can_create_rectangle = False
-    for rods_count in rods_dict.values():
-        if rods_count >= 4:
-            can_create_rectangle = True
-
-    if can_create_rectangle:
-        print("YES")
+    number_of_words = int(input())
+    words = []
+    for _ in range(number_of_words):
+        words.append(input())
+    
+    coined_words = []
+    for first_word, second_word in permutations(words, 2):
+        first_word_suffix = first_word[-2:]
+        second_word_suffix = second_word[:2]
+        if first_word_suffix == second_word_suffix:
+            coined_word = first_word + second_word[2:]
+            coined_words.append(coined_word)
+    if len(coined_words) == 0:
+        print(-1)
     else:
-        print("NO")
+        print(max([len(coined_word) for coined_word in coined_words]))
 
 # solve()
 
