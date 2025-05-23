@@ -38,6 +38,11 @@ def solve():
         for column_i in range(number_of_columns):
             created_word = field[row_i][column_i]
 
+            for offset_x in range(len(t) - 1):
+                offset_y = len(t) - 1 - offset_x
+                
+                
+                
             # 右に移動可能な場合
             if column_i < number_of_columns - 1:
                 created_word += field[row_i][column_i + 1]
